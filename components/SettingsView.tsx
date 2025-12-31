@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { ChevronLeft, Sun, Moon, Monitor, Palette, Bell, Shield, Info } from 'lucide-react';
+import { ChevronLeft, Sun, Moon, Monitor, Palette, Bell, Shield, Info, LogOut } from 'lucide-react';
 import { Theme } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface SettingsViewProps {
   onBack: () => void;
@@ -15,6 +16,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onBack, theme, onThemeChang
     { id: 'dark', label: 'Escuro', icon: <Moon className="w-5 h-5" /> },
     { id: 'system', label: 'Sistema', icon: <Monitor className="w-5 h-5" /> },
   ];
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
@@ -56,37 +61,31 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onBack, theme, onThemeChang
         <section className="space-y-3">
           <div className="flex items-center gap-2 mb-2">
             <Bell className="w-5 h-5 text-emerald-500" />
-            <h2 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Notificações</h2>
+            <h2 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Conta</h2>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-[28px] p-4 border border-slate-100 dark:border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-slate-700 dark:text-slate-300">Lembretes Diários</span>
-              <div className="w-12 h-6 bg-emerald-500 rounded-full relative cursor-pointer">
-                <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
-              </div>
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-[24px] border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 font-bold"
+          >
+            <div className="flex items-center gap-3">
+              <LogOut className="w-5 h-5" />
+              <span>Sair da Conta</span>
             </div>
-            <div className="flex items-center justify-between opacity-50">
-              <span className="font-medium text-slate-700 dark:text-slate-300">Alertas de Eventos</span>
-              <div className="w-12 h-6 bg-slate-200 dark:bg-slate-800 rounded-full relative cursor-not-allowed">
-                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
-              </div>
-            </div>
-          </div>
+          </button>
         </section>
 
         <section className="space-y-3">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-amber-500" />
-            <h2 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Privacidade</h2>
+            <h2 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Sobre</h2>
           </div>
-          <button className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-            <span className="font-medium">Cópia de Segurança (Local)</span>
-            <Info className="w-4 h-4 opacity-30" />
-          </button>
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
+            Dados sincronizados com segurança via Supabase.
+          </div>
         </section>
 
         <div className="pt-8 text-center">
-          <p className="text-xs font-bold text-slate-300 dark:text-slate-700 uppercase tracking-[0.2em]">Equilíbrio v1.0.0</p>
+          <p className="text-xs font-bold text-slate-300 dark:text-slate-700 uppercase tracking-[0.2em]">Equilíbrio v1.2.0</p>
         </div>
       </div>
     </div>
