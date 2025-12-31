@@ -16,6 +16,7 @@ export interface Task {
   subCategory?: string;
   completed: boolean;
   dueDate?: string;
+  reminderTime?: string;
 }
 
 export interface Note {

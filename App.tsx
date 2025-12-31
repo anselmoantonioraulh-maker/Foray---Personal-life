@@ -75,13 +75,15 @@ const App: React.FC = () => {
   }, [notes]);
 
   // Handlers
-  const addTask = (title: string, category: Category, subCategory?: string) => {
+  const addTask = (title: string, category: Category, subCategory?: string, dueDate?: string, reminderTime?: string) => {
     const newTask: Task = {
       id: Date.now().toString(),
       title,
       category,
       subCategory,
-      completed: false
+      completed: false,
+      dueDate,
+      reminderTime
     };
     setTasks([...tasks, newTask]);
   };
@@ -157,8 +159,6 @@ const App: React.FC = () => {
         return <Dashboard onSelectCategory={setSelectedCategory} onNavigate={setActiveTab} tasks={tasks} onQuickNoteSave={(content) => addNote("Rascunho Rápido", content, Category.GENERAL)} />;
     }
   };
-
-  const isTabActive = (tab: typeof activeTab) => activeTab === tab && !selectedCategory;
 
   return (
     <div className="max-w-md mx-auto h-screen relative bg-slate-50 dark:bg-slate-950 overflow-hidden flex flex-col shadow-2xl transition-colors duration-300">

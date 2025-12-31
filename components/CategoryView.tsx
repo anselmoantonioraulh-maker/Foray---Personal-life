@@ -2,13 +2,13 @@
 import React, { useState, useMemo } from 'react';
 import { Category, Task } from '../types';
 import { CATEGORY_CONFIG } from '../constants';
-import { ChevronLeft, Plus, CheckCircle2, Circle, Trash2, Quote } from 'lucide-react';
+import { ChevronLeft, Plus, CheckCircle2, Circle, Trash2, Quote, Calendar, Bell, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface CategoryViewProps {
   category: Category;
   onBack: () => void;
   tasks: Task[];
-  addTask: (title: string, cat: Category, sub?: string) => void;
+  addTask: (title: string, cat: Category, sub?: string, dueDate?: string, reminderTime?: string) => void;
   toggleTask: (id: string) => void;
   removeTask: (id: string) => void;
 }
@@ -24,6 +24,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   const config = CATEGORY_CONFIG[category];
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [selectedSub, setSelectedSub] = useState(config.subCategories[0] || '');
+  const [dueDate, setDueDate] = useState('');
+  const [reminderTime, setReminderTime] = useState('');
+  const [showOptions, setShowOptions] = useState(false);
 
   const randomPhrase = useMemo(() => {
     if (!config.phrases || config.phrases.length === 0) return null;
@@ -33,8 +36,11 @@ const CategoryView: React.FC<CategoryViewProps> = ({
 
   const handleAddTask = () => {
     if (!newTaskTitle.trim()) return;
-    addTask(newTaskTitle, category, selectedSub);
+    addTask(newTaskTitle, category, selectedSub, dueDate || undefined, reminderTime || undefined);
     setNewTaskTitle('');
+    setDueDate('');
+    setReminderTime('');
+    setShowOptions(false);
   };
 
   const filteredTasks = tasks.filter(t => t.category === category);
@@ -84,21 +90,58 @@ const CategoryView: React.FC<CategoryViewProps> = ({
           </div>
         </section>
 
-        <section className="bg-white dark:bg-slate-900 p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center gap-3">
-          <input
-            type="text"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
-            placeholder="Nova tarefa..."
-            className="flex-1 bg-transparent border-none outline-none text-slate-700 dark:text-slate-200 font-medium placeholder:text-slate-300 dark:placeholder:text-slate-700"
-          />
-          <button 
-            onClick={handleAddTask}
-            className={`p-2 rounded-xl ${config.color} text-white transition-transform active:scale-90`}
-          >
-            <Plus className="w-5 h-5" />
-          </button>
+        <section className="space-y-3">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-3 transition-all">
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+                placeholder="Nova tarefa..."
+                className="flex-1 bg-transparent border-none outline-none text-slate-700 dark:text-slate-200 font-medium placeholder:text-slate-300 dark:placeholder:text-slate-700"
+              />
+              <button 
+                onClick={() => setShowOptions(!showOptions)}
+                className="p-2 text-slate-400 dark:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+              >
+                {showOptions ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              </button>
+              <button 
+                onClick={handleAddTask}
+                className={`p-2 rounded-xl ${config.color} text-white transition-transform active:scale-90`}
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+
+            {showOptions && (
+              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-50 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase flex items-center gap-1">
+                    <Calendar className="w-3 h-3" /> Data
+                  </label>
+                  <input 
+                    type="date" 
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl p-2 text-xs text-slate-700 dark:text-slate-300 outline-none focus:ring-1 focus:ring-indigo-100"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase flex items-center gap-1">
+                    <Bell className="w-3 h-3" /> Lembrete
+                  </label>
+                  <input 
+                    type="time" 
+                    value={reminderTime}
+                    onChange={(e) => setReminderTime(e.target.value)}
+                    className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl p-2 text-xs text-slate-700 dark:text-slate-300 outline-none focus:ring-1 focus:ring-indigo-100"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="space-y-3">
@@ -125,7 +168,25 @@ const CategoryView: React.FC<CategoryViewProps> = ({
                   <p className={`font-semibold ${task.completed ? 'line-through text-slate-400 dark:text-slate-600' : 'text-slate-700 dark:text-slate-200'}`}>
                     {task.title}
                   </p>
-                  <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400 dark:text-slate-600">{task.subCategory}</p>
+                  <div className="flex items-center gap-3">
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400 dark:text-slate-600">{task.subCategory}</p>
+                    {(task.dueDate || task.reminderTime) && (
+                      <div className="flex items-center gap-2 opacity-60">
+                         {task.dueDate && (
+                           <span className="flex items-center gap-1 text-[9px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 px-1.5 py-0.5 rounded-md">
+                             <Calendar className="w-2.5 h-2.5" />
+                             {new Date(task.dueDate).toLocaleDateString('pt-BR')}
+                           </span>
+                         )}
+                         {task.reminderTime && (
+                           <span className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md">
+                             <Bell className="w-2.5 h-2.5" />
+                             {task.reminderTime}
+                           </span>
+                         )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button 
                   onClick={() => removeTask(task.id)}
