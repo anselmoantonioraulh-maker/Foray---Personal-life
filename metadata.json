@@ -1,0 +1,7 @@
+{
+  "name": "Foray - Personal life",
+  "description": "Um aplicativo completo para organizar sua vida espiritual, escolar, profissional e doméstica com ferramentas integradas de calendário, mapas e cronômetro.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
