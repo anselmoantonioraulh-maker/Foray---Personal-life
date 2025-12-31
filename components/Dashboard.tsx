@@ -6,7 +6,7 @@ import { Menu, Settings, Sparkles, StickyNote, Send, ChevronRight } from 'lucide
 
 interface DashboardProps {
   onSelectCategory: (cat: Category) => void;
-  onNavigate: (tab: 'home' | 'calendar' | 'map' | 'timer' | 'notes') => void;
+  onNavigate: (tab: 'home' | 'calendar' | 'map' | 'timer' | 'notes' | 'settings') => void;
   tasks: Task[];
   onQuickNoteSave: (content: string) => void;
 }
@@ -44,15 +44,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCategory, onNavigate, tas
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-hidden">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors duration-300">
       {/* Top Header */}
-      <header className="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between sticky top-0 z-30">
-        <button className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
-          <Menu className="w-6 h-6 text-slate-700" />
+      <header className="px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between sticky top-0 z-30 transition-colors">
+        <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-700 dark:text-slate-300">
+          <Menu className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-bold text-slate-800 font-jakarta">Vida Pessoal</h1>
-        <button className="p-2 hover:bg-slate-100 rounded-xl transition-colors">
-          <Settings className="w-6 h-6 text-slate-700" />
+        <h1 className="text-xl font-bold text-slate-800 dark:text-white font-jakarta">Vida Pessoal</h1>
+        <button 
+          onClick={() => onNavigate('settings')}
+          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-700 dark:text-slate-300"
+        >
+          <Settings className="w-6 h-6" />
         </button>
       </header>
 
@@ -65,7 +68,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCategory, onNavigate, tas
               onClick={() => onNavigate(tool.id as any)}
               className="flex flex-col items-center gap-1.5 shrink-0 group"
             >
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-100 text-slate-400 group-hover:text-indigo-600 group-hover:border-indigo-100 transition-all">
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 text-slate-400 group-hover:text-indigo-600 group-hover:border-indigo-100 transition-all">
                 {tool.icon}
               </div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">{tool.label}</span>
@@ -74,16 +77,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCategory, onNavigate, tas
         </section>
 
         {/* Bloco de Notas Rápido */}
-        <section className="bg-amber-50 rounded-[28px] p-5 border border-amber-100 shadow-sm relative overflow-hidden">
+        <section className="bg-amber-50 dark:bg-amber-950/20 rounded-[28px] p-5 border border-amber-100 dark:border-amber-900/30 shadow-sm relative overflow-hidden transition-colors">
           <div className="flex items-center justify-between mb-3 relative z-10">
             <div className="flex items-center gap-2">
-              <StickyNote className="w-4 h-4 text-amber-600" />
-              <h2 className="text-xs font-bold text-amber-700 uppercase tracking-widest">Rascunho Rápido</h2>
+              <StickyNote className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+              <h2 className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest">Rascunho Rápido</h2>
             </div>
             {quickNote && (
               <button 
                 onClick={handleConvertQuickNote}
-                className="p-1.5 bg-amber-200 text-amber-800 rounded-lg hover:bg-amber-300 transition-colors flex items-center gap-1 text-[10px] font-bold"
+                className="p-1.5 bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-100 rounded-lg hover:bg-amber-300 dark:hover:bg-amber-700 transition-colors flex items-center gap-1 text-[10px] font-bold"
               >
                 <Send className="w-3 h-3" />
                 SALVAR
@@ -94,7 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCategory, onNavigate, tas
             value={quickNote}
             onChange={(e) => setQuickNote(e.target.value)}
             placeholder="Algo em mente? Anote aqui..."
-            className="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-amber-300 resize-none font-medium text-sm min-h-[60px] relative z-10"
+            className="w-full bg-transparent border-none outline-none text-slate-700 dark:text-slate-300 placeholder:text-amber-300 dark:placeholder:text-amber-900/50 resize-none font-medium text-sm min-h-[60px] relative z-10"
           />
         </section>
 
@@ -109,7 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectCategory, onNavigate, tas
               <button
                 key={cat}
                 onClick={() => onSelectCategory(cat)}
-                className={`group w-full flex flex-col items-start p-6 ${config.cardBg} rounded-[40px] shadow-lg shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1 active:scale-98 text-left relative overflow-hidden`}
+                className={`group w-full flex flex-col items-start p-6 ${config.cardBg} rounded-[40px] shadow-lg shadow-slate-200/50 dark:shadow-none transition-all duration-300 hover:-translate-y-1 active:scale-98 text-left relative overflow-hidden`}
               >
                 {/* Background Illustration */}
                 {config.illustration}

@@ -1,18 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
-import { Category, Task, Note, Event, TimerSession } from './types';
+import { Category, Task, Note, Event, TimerSession, Theme } from './types';
 import Dashboard from './components/Dashboard';
 import CategoryView from './components/CategoryView';
 import CalendarView from './components/CalendarView';
 import MapView from './components/MapView';
 import TimerView from './components/TimerView';
 import NotesView from './components/NotesView';
+import SettingsView from './components/SettingsView';
 import { Plus } from 'lucide-react';
 
 const App: React.FC = () => {
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'home' | 'calendar' | 'map' | 'timer' | 'notes'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'calendar' | 'map' | 'timer' | 'notes' | 'settings'>('home');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+  // Theme State
+  const [theme, setTheme] = useState<Theme>(() => {
+    return (localStorage.getItem('equil_theme') as Theme) || 'system';
+  });
 
   // Data State
   const [tasks, setTasks] = useState<Task[]>(() => {
@@ -45,6 +51,20 @@ const App: React.FC = () => {
   });
   
   const [sessions, setSessions] = useState<TimerSession[]>([]);
+
+  // Apply Theme
+  useEffect(() => {
+    const root = window.document.documentElement;
+    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    if (isDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    
+    localStorage.setItem('equil_theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     localStorage.setItem('equil_tasks', JSON.stringify(tasks));
@@ -131,23 +151,27 @@ const App: React.FC = () => {
         return <TimerView onLogSession={logSession} />;
       case 'notes':
         return <NotesView notes={notes} onAddNote={addNote} onDeleteNote={deleteNote} />;
+      case 'settings':
+        return <SettingsView onBack={() => setActiveTab('home')} theme={theme} onThemeChange={setTheme} />;
       default:
         return <Dashboard onSelectCategory={setSelectedCategory} onNavigate={setActiveTab} tasks={tasks} onQuickNoteSave={(content) => addNote("Rascunho Rápido", content, Category.GENERAL)} />;
     }
   };
 
+  const isTabActive = (tab: typeof activeTab) => activeTab === tab && !selectedCategory;
+
   return (
-    <div className="max-w-md mx-auto h-screen relative bg-slate-50 overflow-hidden flex flex-col shadow-2xl">
+    <div className="max-w-md mx-auto h-screen relative bg-slate-50 dark:bg-slate-950 overflow-hidden flex flex-col shadow-2xl transition-colors duration-300">
       <div className="flex-1 overflow-hidden">
         {renderContent()}
       </div>
 
       {/* Persistent Bottom Navigation */}
-      {!selectedCategory && (
-        <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 backdrop-blur-xl border-t border-slate-100 flex items-center justify-around p-4 safe-bottom z-50 rounded-t-[32px] shadow-2xl">
+      {!selectedCategory && activeTab !== 'settings' && (
+        <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 flex items-center justify-around p-4 safe-bottom z-50 rounded-t-[32px] shadow-2xl transition-colors">
           <button 
             onClick={() => setActiveTab('home')}
-            className={`p-3 rounded-2xl transition-all ${activeTab === 'home' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'text-slate-400'}`}
+            className={`p-3 rounded-2xl transition-all ${activeTab === 'home' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-indigo-900/40' : 'text-slate-400 dark:text-slate-600'}`}
           >
             <div className="flex flex-col items-center">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -156,28 +180,28 @@ const App: React.FC = () => {
           
           <button 
             onClick={() => setActiveTab('calendar')}
-            className={`p-3 rounded-2xl transition-all ${activeTab === 'calendar' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'text-slate-400'}`}
+            className={`p-3 rounded-2xl transition-all ${activeTab === 'calendar' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-indigo-900/40' : 'text-slate-400 dark:text-slate-600'}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
           </button>
 
           <button 
             onClick={() => setActiveTab('notes')}
-            className="relative -top-10 w-16 h-16 bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform hover:rotate-90 active:scale-90 border-8 border-slate-50"
+            className={`relative -top-10 w-16 h-16 bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-90 border-8 border-slate-50 dark:border-slate-950 ${activeTab === 'notes' ? 'rotate-90' : ''}`}
           >
             <Plus className="w-8 h-8" />
           </button>
 
           <button 
             onClick={() => setActiveTab('map')}
-            className={`p-3 rounded-2xl transition-all ${activeTab === 'map' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'text-slate-400'}`}
+            className={`p-3 rounded-2xl transition-all ${activeTab === 'map' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-indigo-900/40' : 'text-slate-400 dark:text-slate-600'}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
           </button>
 
           <button 
             onClick={() => setActiveTab('timer')}
-            className={`p-3 rounded-2xl transition-all ${activeTab === 'timer' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'text-slate-400'}`}
+            className={`p-3 rounded-2xl transition-all ${activeTab === 'timer' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100 dark:shadow-indigo-900/40' : 'text-slate-400 dark:text-slate-600'}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           </button>

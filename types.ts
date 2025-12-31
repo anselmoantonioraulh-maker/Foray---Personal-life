@@ -7,6 +7,8 @@ export enum Category {
   GENERAL = 'GENERAL'
 }
 
+export type Theme = 'light' | 'dark' | 'system';
+
 export interface Task {
   id: string;
   title: string;
