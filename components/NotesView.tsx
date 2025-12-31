@@ -14,7 +14,6 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   
-  // Novos estados para o formulário de nota
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [newCategory, setNewCategory] = useState<Category>(Category.GENERAL);
@@ -37,24 +36,23 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-hidden">
-      <header className="p-6 bg-white border-b border-slate-100">
-        <h1 className="text-2xl font-bold text-slate-800 mb-4">Notas</h1>
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
+      <header className="p-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 transition-colors">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Notas</h1>
         
-        {/* Barra de Busca */}
         <div className="relative group">
-          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${searchQuery ? 'text-indigo-500' : 'text-slate-400'}`} />
+          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${searchQuery ? 'text-indigo-500' : 'text-slate-400 dark:text-slate-600'}`} />
           <input 
             type="text"
             placeholder="Buscar no título ou conteúdo..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-100 focus:bg-white transition-all text-slate-700 font-medium"
+            className="w-full pl-12 pr-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-100 dark:focus:border-indigo-900 focus:bg-white dark:focus:bg-slate-900 transition-all text-slate-700 dark:text-slate-200 font-medium placeholder:text-slate-400 dark:placeholder:text-slate-600"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 rounded-full text-slate-400"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full text-slate-400 dark:text-slate-500"
             >
               <X className="w-4 h-4" />
             </button>
@@ -64,15 +62,15 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
 
       <main className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar pb-32">
         {isAdding ? (
-          <div className="bg-white p-6 rounded-[32px] shadow-xl border border-indigo-50 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-xl border border-indigo-50 dark:border-indigo-900/30 animate-in fade-in slide-in-from-top-4 duration-300">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-bold text-slate-800">Nova Nota</h2>
-              <button onClick={() => setIsAdding(false)} className="text-slate-400 p-1"><X className="w-5 h-5"/></button>
+              <h2 className="font-bold text-slate-800 dark:text-slate-100">Nova Nota</h2>
+              <button onClick={() => setIsAdding(false)} className="text-slate-400 dark:text-slate-600 p-1"><X className="w-5 h-5"/></button>
             </div>
             
             <input 
               placeholder="Título da nota"
-              className="w-full text-lg font-bold outline-none mb-4 placeholder:text-slate-200 text-slate-800"
+              className="w-full text-lg font-bold outline-none mb-4 bg-transparent placeholder:text-slate-200 dark:placeholder:text-slate-800 text-slate-800 dark:text-slate-100"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
             />
@@ -80,7 +78,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
             <textarea 
               placeholder="Escreva algo inspirador..."
               rows={4}
-              className="w-full outline-none mb-4 resize-none text-slate-600 placeholder:text-slate-300"
+              className="w-full outline-none mb-4 bg-transparent resize-none text-slate-600 dark:text-slate-400 placeholder:text-slate-300 dark:placeholder:text-slate-800"
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
             />
@@ -93,7 +91,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                     newCategory === cat 
                     ? `${CATEGORY_CONFIG[cat].color} text-white` 
-                    : 'bg-slate-100 text-slate-400'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600'
                   }`}
                 >
                   {CATEGORY_CONFIG[cat].label}
@@ -103,7 +101,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
 
             <button 
               onClick={handleSave}
-              className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-all"
+              className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 dark:shadow-none active:scale-95 transition-all"
             >
               Salvar Nota
             </button>
@@ -111,7 +109,7 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
         ) : (
           <button 
             onClick={() => setIsAdding(true)}
-            className="w-full p-4 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-400 font-bold hover:border-indigo-300 hover:text-indigo-400 transition-all active:scale-98"
+            className="w-full p-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-slate-400 dark:text-slate-600 font-bold hover:border-indigo-300 dark:hover:border-indigo-700 hover:text-indigo-400 dark:hover:text-indigo-500 transition-all active:scale-98"
           >
             <Plus className="w-5 h-5" />
             Nova Nota
@@ -120,8 +118,8 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
 
         {filteredNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-            <FileText className="w-16 h-16 mb-4 text-slate-300" />
-            <p className="font-medium text-slate-500">
+            <FileText className="w-16 h-16 mb-4 text-slate-300 dark:text-slate-700" />
+            <p className="font-medium text-slate-500 dark:text-slate-500">
               {searchQuery ? 'Nenhuma nota corresponde à busca' : 'Sua lista de notas está vazia'}
             </p>
           </div>
@@ -130,28 +128,28 @@ const NotesView: React.FC<NotesViewProps> = ({ notes, onAddNote, onDeleteNote })
             {filteredNotes.map(note => (
               <div 
                 key={note.id}
-                className="group bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm hover:shadow-md transition-all relative overflow-hidden"
+                className="group bg-white dark:bg-slate-900 p-5 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all relative overflow-hidden"
               >
                 <div className={`absolute top-0 left-0 w-1.5 h-full ${CATEGORY_CONFIG[note.category].color}`}></div>
                 
                 <div className="flex justify-between items-start mb-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-widest ${CATEGORY_CONFIG[note.category].textColor}`}>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${CATEGORY_CONFIG[note.category].textColor} dark:opacity-80`}>
                     {CATEGORY_CONFIG[note.category].label}
                   </span>
                   <button 
                     onClick={() => onDeleteNote(note.id)}
-                    className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-red-500 transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-2 text-slate-300 dark:text-slate-700 hover:text-red-500 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
                 
-                <h3 className="font-bold text-slate-800 text-lg mb-2">{note.title}</h3>
-                <p className="text-sm text-slate-500 line-clamp-3 mb-4 leading-relaxed">
+                <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg mb-2">{note.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-3 mb-4 leading-relaxed">
                   {note.content}
                 </p>
                 
-                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 uppercase">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 dark:text-slate-700 uppercase">
                   <Calendar className="w-3 h-3" />
                   {new Date(note.createdAt).toLocaleDateString('pt-BR')}
                 </div>
